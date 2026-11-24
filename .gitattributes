@@ -1,0 +1,6 @@
+# The build concatenates src/ byte for byte and the shell scripts run on Linux too:
+# every text file stays LF in the repository AND in the working copy, whatever core.autocrlf says.
+* text=auto eol=lf
+*.png binary
+*.zip binary
+*.woff2 binary

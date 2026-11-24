@@ -1,0 +1,9 @@
+dist/
+node_modules/
+__pycache__/
+*.pyc
+tests/*_out/
+tests/*.png
+
+# backups sent from the web sessions
+birjis-source-step*.zip

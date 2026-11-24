@@ -1,0 +1,10 @@
+# Netlify settings for a Git-connected site or `netlify deploy --build` (Netlify builds the page AND bundles Meyslon's
+# server function). A drag-and-drop of dist/site/ carries no function: Meyslon then answers inside Claude or offline.
+# Steps in docs/DEPLOY.md. Security and cache headers are in dist/site/_headers (tools/site_static/).
+[build]
+  command = "bash build.sh && python3 tools/mksite.py"
+  publish = "dist/site"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

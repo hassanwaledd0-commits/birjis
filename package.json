@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "description": "Birjis: build-time and test-time tooling; @anthropic-ai/sdk is used only by the server function netlify/functions/ask.mjs (Meyslon's tier b). The page itself ships with no npm dependency.",
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "5.3.0",
+    "html-validate": "11.20.0",
+    "three": "0.128.0"
+  },
+  "scripts": {
+    "build": "./build.sh && python3 tools/mksite.py",
+    "check": "./check.sh",
+    "brand": "node tools/mkbrand.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.3.0"
+  }
+}

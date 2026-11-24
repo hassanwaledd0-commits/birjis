@@ -1,0 +1,8 @@
+{
+ "site_url": "https://birjis3.netlify.app/",
+ "old_urls": [
+  "https://birjis.netlify.app/"
+ ],
+ "ai_endpoint": "/api/ask",
+ "_note": "The one place the production address is set. tools/mksite.py reads it for canonical, Open Graph, JSON-LD, sitemap.xml, robots.txt and the redirect package of the old addresses (dist/old-site/). ai_endpoint: the address of Meyslon's server tier (netlify/functions/ask.mjs, same path in its config); empty = no server tier."
+}
