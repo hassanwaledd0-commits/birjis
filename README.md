@@ -15,7 +15,8 @@ npm ci            # مرة واحدة: three.js للاختبارات + html-vali
 ./check.sh        # بناء + صحة HTML + فحص الروابط + اختبار دخان يفتح كل قسم (عربي/إنجليزي × 360px/1280px) ويفشل عند أي خطأ console
 ./check.sh --quick   # نفس الشي بانتظار أقصر وبدون تجربة الطيران
 ```
-يحتاج Python 3 وNode 22+ وPlaywright مع Chromium. `CHECK_ONLINE=1 python3 tools/check_links.py` يجرّب الروابط الخارجية فعلياً (يحتاج نت).
+يحتاج Python 3 وNode 22+ وPlaywright مع Chromium (`npm ci` ينصّبهم عدا متصفح Playwright: `npx playwright install chromium`).
+على ويندوز `python3` غالباً اختصار متجر مايكروسوفت لا يعمل، و`./check.sh` يدوّر بنفسه على `python3` ثم `python` ثم `py` (أو مرّر `PY=/path/to/python`). `CHECK_ONLINE=1 python3 tools/check_links.py` يجرّب الروابط الخارجية فعلياً (يحتاج نت).
 صور الشعار والمشاركة: `node tools/mkbrand.js` يرسم `tools/site_static/logo.png` و`og.png` من أشكال الشعار داخل التطبيق.
 
 ## النشر (Netlify، سحب وإفلات)

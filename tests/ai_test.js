@@ -4,17 +4,17 @@
 // answered, the links under an answer, the lesson tutor and the camera (manual part picker without a/b), in Arabic and English.
 // usage: node tests/ai_test.js        (after ./build.sh && python3 tools/mksite.py)
 const { chromium } = require('playwright'); const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.dirname(__dirname), SITE = ROOT + '/dist/site', three = fs.readFileSync(ROOT + '/node_modules/three/build/three.min.js');
+const ROOT = path.dirname(__dirname), SITE = path.resolve(path.join(ROOT, 'dist', 'site')), three = fs.readFileSync(path.join(ROOT, 'node_modules', 'three', 'build', 'three.min.js'));
 const TYPES = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8', '.js': 'application/javascript', '.woff2': 'font/woff2' };
 const fails = []; let n = 0; const ok = (c, what) => { n++; if (!c) { fails.push(what); console.log('FAIL', what); } };
 // a 2x2 PNG for the camera
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR4nGP4z8Dwn4GBgYEBAB7mA/1tE/aCAAAAAElFTkSuQmCC', 'base64');
 (async () => {
   const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/index.html'; const f = path.join(SITE, p);
-    if (!f.startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('not found'); }
+    if (!path.resolve(f).startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('not found'); }
     r.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r); });
   await new Promise(ok => srv.listen(0, '127.0.0.1', ok)); const URL = `http://127.0.0.1:${srv.address().port}/`;
-  const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 
   // one page per setup: A = behaviour of window.claude ("none" = not in Claude), B = behaviour of /api/ask
   async function open(A, B, o = {}) {

@@ -3,17 +3,17 @@
 // It only WARNS (listed at the end) about horizontal overflow: fixing those is the mobile step of the plan.
 // usage: node tests/smoke.js [--quick]     (after ./build.sh && python3 tools/mksite.py; three.js and the fonts are served locally, no network)
 const { chromium } = require('playwright'); const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.dirname(__dirname), SITE = process.env.SMOKE_SITE || ROOT + '/dist/site',   // SMOKE_SITE: another folder to test (used to prove the test fails on a broken page)
+const ROOT = path.dirname(__dirname), SITE = path.resolve(process.env.SMOKE_SITE || path.join(ROOT, 'dist', 'site')),   // SMOKE_SITE: another folder to test (used to prove the test fails on a broken page); resolved so the guard below also works on Windows
    three = fs.readFileSync(ROOT + '/node_modules/three/build/three.min.js');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8', '.js': 'application/javascript', '.woff2': 'font/woff2' };
 const quick = process.argv.includes('--quick');
 const SELFHOSTED = fs.existsSync(SITE + '/vendor/three-r128.min.js');   // step 3: three.js and the fonts are files of the site
 (async () => {
   const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/index.html'; const f = path.join(SITE, p);
-    if (!f.startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('not found'); }
+    if (!path.resolve(f).startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('not found'); }
     r.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r); });
   await new Promise(ok => srv.listen(0, '127.0.0.1', ok)); const URL = `http://127.0.0.1:${srv.address().port}/`;
-  const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const fails = [], warns = []; let opened = 0;
   for (const lang of ['ar', 'en']) for (const [w, h] of [[360, 740], [1280, 800]]) {
     const tag = `${lang} ${w}px`, ctx = await b.newContext({ viewport: { width: w, height: h } }), pg = await ctx.newPage(), errs = [];

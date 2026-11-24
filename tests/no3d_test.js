@@ -2,15 +2,15 @@
 // Three cases: three.js does not load (network), no WebGL on the device, and the English wording. No other host is contacted.
 // usage: node tests/no3d_test.js        (after ./build.sh && python3 tools/mksite.py)
 const { chromium } = require('playwright'); const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.dirname(__dirname), SITE = ROOT + '/dist/site';
+const ROOT = path.dirname(__dirname), SITE = path.resolve(path.join(ROOT, 'dist', 'site'));
 const TYPES = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.js': 'application/javascript', '.woff2': 'font/woff2' };
 const fails = []; let n = 0; const ok = (c, what) => { n++; if (!c) { fails.push(what); console.log('FAIL', what); } };
 (async () => {
   const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split('?')[0]); if (p === '/') p = '/index.html'; const f = path.join(SITE, p);
-    if (!f.startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('not found'); }
+    if (!path.resolve(f).startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end('not found'); }
     r.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r); });
   await new Promise(ok => srv.listen(0, '127.0.0.1', ok)); const URL = `http://127.0.0.1:${srv.address().port}/`;
-  const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   async function run(tag, setup, check) {
     const ctx = await b.newContext({ viewport: { width: 400, height: 820 } }), pg = await ctx.newPage(), errs = [];
     pg.on('pageerror', e => errs.push('page error: ' + String(e).slice(0, 200)));
